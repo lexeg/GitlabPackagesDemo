@@ -1,13 +1,30 @@
-﻿namespace GitlabPackagesDemo.GitLab;
+﻿using Newtonsoft.Json;
+
+namespace GitlabPackagesDemo.GitLab;
 
 public class Namespace
 {
-    public int id { get; set; }
-    public string name { get; set; }
-    public string path { get; set; }
-    public string kind { get; set; }
-    public string full_path { get; set; }
-    public int? parent_id { get; set; }
-    public object avatar_url { get; set; }
-    public string web_url { get; set; }
+    [JsonProperty("id")]
+    public int Id { get; set; }
+    
+    [JsonProperty("name")]
+    public string Name { get; set; }
+    
+    [JsonProperty("path")]
+    public string Path { get; set; }
+    
+    [JsonProperty("kind")]
+    public string Kind { get; set; }
+    
+    [JsonProperty("full_path")]
+    public string FullPath { get; set; }
+    
+    [JsonProperty("parent_id")]
+    public int? ParentId { get; set; }
+    
+    [JsonProperty("avatar_url")]
+    public object AvatarUrl { get; set; }
+    
+    [JsonProperty("web_url")]
+    public string WebUrl { get; set; }
 }

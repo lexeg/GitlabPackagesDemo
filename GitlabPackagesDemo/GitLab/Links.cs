@@ -1,12 +1,27 @@
-﻿namespace GitlabPackagesDemo.GitLab;
+﻿using Newtonsoft.Json;
+
+namespace GitlabPackagesDemo.GitLab;
 
 public class Links
 {
-    public string self { get; set; }
-    public string issues { get; set; }
-    public string merge_requests { get; set; }
-    public string repo_branches { get; set; }
-    public string labels { get; set; }
-    public string events { get; set; }
-    public string members { get; set; }
+    [JsonProperty("self")]
+    public string Self { get; set; }
+    
+    [JsonProperty("issues")]
+    public string Issues { get; set; }
+    
+    [JsonProperty("merge_requests")]
+    public string MergeRequests { get; set; }
+    
+    [JsonProperty("repo_branches")]
+    public string RepoBranches { get; set; }
+    
+    [JsonProperty("labels")]
+    public string Labels { get; set; }
+    
+    [JsonProperty("events")]
+    public string Events { get; set; }
+    
+    [JsonProperty("members")]
+    public string Members { get; set; }
 }

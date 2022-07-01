@@ -32,7 +32,7 @@ namespace GitlabPackagesDemo
             var builder = new StringBuilder();
             foreach (var project in projects)
             {
-                builder.AppendLine($"{project.id}; {project.name}; {project.path_with_namespace}; {project.web_url}");
+                builder.AppendLine($"{project.Id}; {project.Name}; {project.PathWithNamespace}; {project.WebUrl}");
             }
 
             await File.WriteAllTextAsync("projects.txt", builder.ToString());
@@ -48,15 +48,15 @@ namespace GitlabPackagesDemo
             var repoFiles = new List<RepoFiles>();
             foreach (var item in items)
             {
-                var filesInProject = await client.SearchFilesInProject(item.id, searchText, fileExtension);
+                var filesInProject = await client.SearchFilesInProject(item.Id, searchText, fileExtension);
                 repoFiles.Add(new RepoFiles { Repository = item, Files = filesInProject });
-                var dir = Path.Combine(rootDirectory, $"{item.name}-{item.id}");
+                var dir = Path.Combine(rootDirectory, $"{item.Name}-{item.Id}");
                 if (Directory.Exists(dir)) Directory.Delete(dir);
                 var directoryInfo = Directory.CreateDirectory(dir);
                 var builder = new StringBuilder();
                 foreach (var f in filesInProject)
                 {
-                    builder.AppendLine($"{f.project_id}; {f.filename}; {f.path}; {f.@ref}");
+                    builder.AppendLine($"{f.ProjectId}; {f.FileName}; {f.Path}; {f.Ref}");
                 }
 
                 await File.WriteAllTextAsync(Path.Combine(directoryInfo.FullName, "res.txt"), builder.ToString());
@@ -72,14 +72,14 @@ namespace GitlabPackagesDemo
             var tuples = new List<(string Package, string Project, string Version)>();
             foreach (var repoFile in repoFiles)
             {
-                var dir = Path.Combine(rootDirectory, $"{repoFile.Repository.name}-{repoFile.Repository.id}");
+                var dir = Path.Combine(rootDirectory, $"{repoFile.Repository.Name}-{repoFile.Repository.Id}");
                 var directoryInfo = Directory.CreateDirectory(dir);
                 var packages = new List<PackageReference>();
                 foreach (var repoFileFile in repoFile.Files)
                 {
-                    var fileByName = await client.GetFileByName(repoFile.Repository.id, repoFileFile.filename,
-                        repoFileFile.@ref);
-                    var last = repoFileFile.filename.Split('/').Last();
+                    var fileByName = await client.GetFileByName(repoFile.Repository.Id, repoFileFile.FileName,
+                        repoFileFile.Ref);
+                    var last = repoFileFile.FileName.Split('/').Last();
                     var path = Path.Combine(directoryInfo.FullName, last);
                     await File.WriteAllTextAsync(path, fileByName);
                     var items = GetPackages(path);
@@ -87,7 +87,7 @@ namespace GitlabPackagesDemo
                 }
 
                 tuples.AddRange(packages.Select(reference =>
-                    (reference.Include, repoFile.Repository.path_with_namespace, reference.Version)));
+                    (reference.Include, path_with_namespace: repoFile.Repository.PathWithNamespace, reference.Version)));
             }
 
             return tuples.ToArray();

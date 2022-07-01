@@ -1,7 +1,12 @@
-﻿namespace GitlabPackagesDemo.GitLab;
+﻿using Newtonsoft.Json;
+
+namespace GitlabPackagesDemo.GitLab;
 
 public class Permissions
 {
-    public ProjectAccess project_access { get; set; }
-    public GroupAccess group_access { get; set; }
+    [JsonProperty("project_access")]
+    public ProjectAccess ProjectAccess { get; set; }
+    
+    [JsonProperty("group_access")]
+    public GroupAccess GroupAccess { get; set; }
 }

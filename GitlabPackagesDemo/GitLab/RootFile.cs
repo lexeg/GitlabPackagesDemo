@@ -1,14 +1,30 @@
-﻿namespace GitlabPackagesDemo.GitLab;
+﻿using Newtonsoft.Json;
+
+namespace GitlabPackagesDemo.GitLab;
 
 public class RootFile
 {
-    public string basename { get; set; }
-    public string data { get; set; }
-    public string path { get; set; }
-    public string filename { get; set; }
-    public object id { get; set; }
-    public string @ref { get; set; }
-    public int startline { get; set; }
-    public int project_id { get; set; }
+    [JsonProperty("basename")]
+    public string BaseName { get; set; }
+    
+    [JsonProperty("data")]
+    public string Data { get; set; }
+    
+    [JsonProperty("path")]
+    public string Path { get; set; }
+    
+    [JsonProperty("filename")]
+    public string FileName { get; set; }
+    
+    [JsonProperty("id")]
+    public object Id { get; set; }
+    
+    [JsonProperty("ref")]
+    public string Ref { get; set; }
+    
+    [JsonProperty("startline")]
+    public int StartLine { get; set; }
+    
+    [JsonProperty("project_id")]
+    public int ProjectId { get; set; }
 }
-
