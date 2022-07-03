@@ -30,7 +30,7 @@
                 <MenuItem Header="{StaticResource OpenSettingsMenu}" Command="{Binding OpenSettingsCommand}" />
                 <Separator />
                 <MenuItem Header="{StaticResource ExportMenu}">
-                    <MenuItem Header="{StaticResource ExportRepositories}" />
+                    <MenuItem Header="{StaticResource ExportRepositories}" Command="{Binding SaveRepositoriesCommand}" />
                     <MenuItem Header="{StaticResource ExportPackages}" />
                 </MenuItem>
                 <Separator />

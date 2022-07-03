@@ -17,6 +17,7 @@ using GitlabPackagesDemo.Comparers;
 using GitlabPackagesDemo.GitLab;
 using GitlabPackagesDemo.Settings;
 using GitlabPackagesDemo.Views;
+using Microsoft.Win32;
 using Newtonsoft.Json;
 using Formatting = Newtonsoft.Json.Formatting;
 
@@ -25,12 +26,14 @@ namespace GitlabPackagesDemo.ViewModels;
 public class RepositoriesViewModel : INotifyPropertyChanged
 {
     private readonly Window _window;
+    private readonly FileSaver _fileSaver;
     private Root[] _repositories;
 
 
-    public RepositoriesViewModel(Window window)
+    public RepositoriesViewModel(Window window, FileSaver fileSaver)
     {
         _window = window;
+        _fileSaver = fileSaver;
         InitializeCommands();
     }
 
@@ -39,6 +42,8 @@ public class RepositoriesViewModel : INotifyPropertyChanged
     public ICommand ClickButtonCommand { get; private set; }
     
     public ICommand OpenSettingsCommand { get; private set; }
+    
+    public ICommand SaveRepositoriesCommand { get; private set; }
 
     public Root[] Repositories
     {
@@ -68,7 +73,15 @@ public class RepositoriesViewModel : INotifyPropertyChanged
         ShowRepositoriesCommand = new BaseAutoEventCommand(_ => LoadRepositories(), _ => true);
         ClickButtonCommand = new BaseAutoEventCommand(_ => ButtonBase_OnClick(), _ => HasData);
         OpenSettingsCommand = new BaseAutoEventCommand(_ => OpenSettings(), _ => true);
-        CloseAppCommand = new BaseAutoEventCommand(o => _window.Close(), o => true);
+        CloseAppCommand = new BaseAutoEventCommand(_ => _window.Close(), o => true);
+        SaveRepositoriesCommand = new BaseAutoEventCommand(async _ =>
+        {
+            var saveFileDialog = new SaveFileDialog
+                { DefaultExt = "*.txt", Filter = "Текстовые документы |*.txt", FileName = "projects.txt" };
+            if (saveFileDialog.ShowDialog() != true) return;
+            var filePath = saveFileDialog.FileName;
+            await _fileSaver.SaveProjects(filePath, _repositories);
+        }, _ => HasData);
     }
 
     private GitLabSettings GetSettings() => new()
@@ -111,19 +124,8 @@ public class RepositoriesViewModel : INotifyPropertyChanged
             gitlabSettings.PrivateToken = settingsDialogDataContext.Token;
         }
     }
-    
-    private async Task<Root[]> GetAllProjects(GitLabClient client)
-    {
-        var projects = await client.GetProjects();
-        var builder = new StringBuilder();
-        foreach (var project in projects)
-        {
-            builder.AppendLine($"{project.Id}; {project.Name}; {project.PathWithNamespace}; {project.WebUrl}");
-        }
 
-        await File.WriteAllTextAsync("projects.txt", builder.ToString());
-        return projects;
-    }
+    private async Task<Root[]> GetAllProjects(GitLabClient client) => await client.GetProjects();
     
     private async Task<RepoFiles[]> GetFilesInProject(GitLabClient client,
         string searchText,

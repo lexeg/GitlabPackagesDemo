@@ -1,4 +1,5 @@
-﻿using GitlabPackagesDemo.ViewModels;
+﻿using GitlabPackagesDemo.Common;
+using GitlabPackagesDemo.ViewModels;
 
 namespace GitlabPackagesDemo.Views
 {
@@ -10,7 +11,7 @@ namespace GitlabPackagesDemo.Views
         public MainWindow()
         {
             InitializeComponent();
-            DataContext = new RepositoriesViewModel(this);
+            DataContext = new RepositoriesViewModel(this, new FileSaver());
         }
     }
 }
