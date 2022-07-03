@@ -11,4 +11,11 @@
       <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ApplicationDefinition Include="Views\App.xaml">
+        <Generator>MSBuild:Compile</Generator>
+        <XamlRuntime>Wpf</XamlRuntime>
+      </ApplicationDefinition>
+    </ItemGroup>
+
 </Project>

@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 
-namespace GitlabPackagesDemo
+namespace GitlabPackagesDemo.Views
 {
     /// <summary>
     /// Interaction logic for App.xaml
