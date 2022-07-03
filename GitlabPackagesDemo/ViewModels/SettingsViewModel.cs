@@ -23,13 +23,23 @@ public class SettingsViewModel : INotifyPropertyChanged
         InitializeCommands();
     }
 
-    public SettingsModel CurrentSettings
+    public string Host
     {
-        get => _currentSettings;
+        get => _currentSettings.Host;
         set
         {
-            _currentSettings = value;
-            OnPropertyChanged(nameof(CurrentSettings));
+            _currentSettings.Host = value;
+            OnPropertyChanged(nameof(Host));
+        }
+    }
+
+    public string Token
+    {
+        get => _currentSettings.Token;
+        set
+        {
+            _currentSettings.Token = value;
+            OnPropertyChanged(nameof(Token));
         }
     }
 

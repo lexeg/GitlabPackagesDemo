@@ -10,7 +10,7 @@ namespace GitlabPackagesDemo.Views
         public MainWindow()
         {
             InitializeComponent();
-            DataContext = new RepositoriesViewModel();
+            DataContext = new RepositoriesViewModel(this);
         }
     }
 }

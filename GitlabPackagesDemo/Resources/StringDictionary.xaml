@@ -1,10 +1,21 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:system="clr-namespace:System;assembly=mscorlib">
-    <system:String x:Key="ClickButton">Нажми на кнопку</system:String>
-    <system:String x:Key="OpenSettingsButton">Открыть настройки</system:String>
+    <system:String x:Key="MainWindowTitle">Viewer nuget-пакетов</system:String>
+    <system:String x:Key="SettingsWindowTitle">Настройки</system:String>
+    <system:String x:Key="ClickButtonMenu">Нажми на кнопку</system:String>
+    <system:String x:Key="OpenSettingsMenu">Открыть настройки</system:String>
     <system:String x:Key="UrlCaption">Url</system:String>
     <system:String x:Key="TokenCaption">Private Token</system:String>
     <system:String x:Key="ApplyButton">Применить</system:String>
     <system:String x:Key="CancelButton">Отмена</system:String>
+    <system:String x:Key="FileMenu">Файл</system:String>
+    <system:String x:Key="ShowRepositoriesMenu">Репозитории</system:String>
+    <system:String x:Key="CloseWindow">Закрыть</system:String>
+    <system:String x:Key="NoData">Нет данных для отображения</system:String>
+    <system:String x:Key="TableHeaderId">Id</system:String>
+    <system:String x:Key="TableHeaderName">Name</system:String>
+    <system:String x:Key="ExportMenu">Экспорт</system:String>
+    <system:String x:Key="ExportRepositories">Выгрузить список репозиториев</system:String>
+    <system:String x:Key="ExportPackages">Выгрузить список библиотек</system:String>
 </ResourceDictionary>

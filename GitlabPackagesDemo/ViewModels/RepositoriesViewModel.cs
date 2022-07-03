@@ -7,6 +7,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 using System.Xml;
 using GitlabPackagesDemo.Annotations;
@@ -23,14 +24,36 @@ namespace GitlabPackagesDemo.ViewModels;
 
 public class RepositoriesViewModel : INotifyPropertyChanged
 {
-    public RepositoriesViewModel()
+    private readonly Window _window;
+    private Root[] _repositories;
+
+
+    public RepositoriesViewModel(Window window)
     {
+        _window = window;
         InitializeCommands();
     }
 
+    public ICommand ShowRepositoriesCommand { get; private set; }
+    
     public ICommand ClickButtonCommand { get; private set; }
     
-    public ICommand OpenSettingsButtonCommand { get; private set; }
+    public ICommand OpenSettingsCommand { get; private set; }
+
+    public Root[] Repositories
+    {
+        get => _repositories;
+        set
+        {
+            _repositories = value;
+            OnPropertyChanged(nameof(Repositories));
+            OnPropertyChanged(nameof(HasData));
+        }
+    }
+
+    public ICommand CloseAppCommand { get; private set; }
+
+    public bool HasData => _repositories != null && _repositories.Any();
     
     public event PropertyChangedEventHandler PropertyChanged;
 
@@ -42,21 +65,32 @@ public class RepositoriesViewModel : INotifyPropertyChanged
     
     private void InitializeCommands()
     {
-        ClickButtonCommand = new BaseAutoEventCommand(_ => ButtonBase_OnClick(), _ => true);
-        OpenSettingsButtonCommand = new BaseAutoEventCommand(_ => ButtonBase2_OnClick(), _ => true);
+        ShowRepositoriesCommand = new BaseAutoEventCommand(_ => LoadRepositories(), _ => true);
+        ClickButtonCommand = new BaseAutoEventCommand(_ => ButtonBase_OnClick(), _ => HasData);
+        OpenSettingsCommand = new BaseAutoEventCommand(_ => OpenSettings(), _ => true);
+        CloseAppCommand = new BaseAutoEventCommand(o => _window.Close(), o => true);
+    }
+
+    private GitLabSettings GetSettings() => new()
+    {
+        Host = "https://gitlab-orms.ad.speechpro.com",
+        PrivateToken = "D2tpy9ph-guGKfeVnemn"
+    };
+
+    private async void LoadRepositories()
+    {
+        var settings = GetSettings();
+        using var client = new GitLabClient(settings);
+        Repositories = await GetAllProjects(client);
     }
     
     private async void ButtonBase_OnClick()
     {
         const string rootDirectory = "prjs";
-        var settings = new GitLabSettings
-        {
-            Host = "https://gitlab-orms.ad.speechpro.com",
-            PrivateToken = "mi3Qy7z6pERhxKX8_gjA"
-        };
+        var settings = GetSettings();
         using var client = new GitLabClient(settings);
-        var items = await GetAllProjects(client);
-        var filesInProject = await GetFilesInProject(client, "PackageReference", "csproj", items, rootDirectory);
+        Repositories ??= await GetAllProjects(client);
+        var filesInProject = await GetFilesInProject(client, "PackageReference", "csproj", Repositories, rootDirectory);
         var filesContent = await GetFilesContent(client, filesInProject, rootDirectory);
         var result = GroupToDictionary(filesContent);
         var serializeObject = JsonConvert.SerializeObject(result, Formatting.Indented);
@@ -66,19 +100,15 @@ public class RepositoriesViewModel : INotifyPropertyChanged
         await CreateList(directoryInfo, result, "list2.txt", false);
     }
     
-    private void ButtonBase2_OnClick()
+    private void OpenSettings()
     {
-        var gitlabSettings = new GitLabSettings
-        {
-            Host = "https://gitlab-orms.ad.speechpro.com",
-            PrivateToken = "mi3Qy7z6pERhxKX8_gjA"
-        };
+        var gitlabSettings = GetSettings();
         var settingsDialog = new SettingsDialog(gitlabSettings);
         if (settingsDialog.ShowDialog().GetValueOrDefault())
         {
             if (settingsDialog.DataContext is not SettingsViewModel settingsDialogDataContext) return;
-            gitlabSettings.Host = settingsDialogDataContext.CurrentSettings.Host;
-            gitlabSettings.PrivateToken = settingsDialogDataContext.CurrentSettings.Token;
+            gitlabSettings.Host = settingsDialogDataContext.Host;
+            gitlabSettings.PrivateToken = settingsDialogDataContext.Token;
         }
     }
     

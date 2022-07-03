@@ -6,20 +6,52 @@
         xmlns:local="clr-namespace:GitlabPackagesDemo.Views"
         xmlns:views="clr-namespace:GitlabPackagesDemo.ViewModels"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Height="450" Width="800">
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="../Resources/StringDictionary.xaml" />
+                <ResourceDictionary Source="../Converters/Converters.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Window.Resources>
+    <Window.Title>
+        <StaticResource ResourceKey="MainWindowTitle" />
+    </Window.Title>
     <Grid d:DataContext="{d:DesignInstance views:RepositoriesViewModel}">
         <Grid.RowDefinitions>
-            <RowDefinition />
-            <RowDefinition />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <Button Grid.Row="0" Content="{StaticResource OpenSettingsButton}" Command="{Binding OpenSettingsButtonCommand}" />
-        <Button Grid.Row="1" Content="{StaticResource ClickButton}" Command="{Binding ClickButtonCommand}" />
+        <Menu Grid.Row="0">
+            <MenuItem Header="{StaticResource FileMenu}">
+                <MenuItem Header="{StaticResource ShowRepositoriesMenu}" Command="{Binding ShowRepositoriesCommand}" />
+                <MenuItem Header="{StaticResource ClickButtonMenu}" Command="{Binding ClickButtonCommand}" />
+                <MenuItem Header="{StaticResource OpenSettingsMenu}" Command="{Binding OpenSettingsCommand}" />
+                <Separator />
+                <MenuItem Header="{StaticResource ExportMenu}">
+                    <MenuItem Header="{StaticResource ExportRepositories}" />
+                    <MenuItem Header="{StaticResource ExportPackages}" />
+                </MenuItem>
+                <Separator />
+                <MenuItem Header="{StaticResource CloseWindow}" Command="{Binding CloseAppCommand}" />
+            </MenuItem>
+        </Menu>
+        <TextBlock Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center"
+                   Visibility="{Binding HasData, Converter={StaticResource BoolToVisibilityInverted}}"
+                   Text="{StaticResource NoData}" />
+        <Grid Grid.Row="1" Visibility="{Binding HasData, Converter={StaticResource BoolToVisibility}}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <DataGrid AutoGenerateColumns="False" ItemsSource="{Binding Repositories}">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="{StaticResource TableHeaderId}" Binding="{Binding Id}" Width="*" />
+                    <DataGridTextColumn Header="{StaticResource TableHeaderName}" Binding="{Binding Name}" Width="*" />
+                </DataGrid.Columns>
+            </DataGrid>
+        </Grid>
     </Grid>
 </Window>
