@@ -10,7 +10,7 @@ namespace GitlabPackagesDemo.Common;
 
 public class FileSaver
 {
-    public async Task SaveProjects(string filePath, Root[] repositories)
+    public async Task SaveProjects(string filePath, GitRepository[] repositories)
     {
         var builder = new StringBuilder();
         foreach (var repository in repositories)
@@ -22,13 +22,13 @@ public class FileSaver
         await File.WriteAllTextAsync(filePath, builder.ToString());
     }
 
-    public async Task SaveProjectFiles(RootFile[] filesInProject, string rootDirectory, string subDir)
+    public async Task SaveProjectFiles(RepositoryFileData[] repositoryFiles, string rootDirectory, string subDir)
     {
         var dir = Path.Combine(rootDirectory, subDir);
         if (Directory.Exists(dir)) Directory.Delete(dir);
         var directoryInfo = Directory.CreateDirectory(dir);
         var builder = new StringBuilder();
-        foreach (var f in filesInProject)
+        foreach (var f in repositoryFiles)
         {
             builder.AppendLine($"{f.ProjectId}; {f.FileName}; {f.Path}; {f.Ref}");
         }

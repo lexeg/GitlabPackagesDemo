@@ -2,7 +2,7 @@
 
 namespace GitlabPackagesDemo.GitLab;
 
-public class RootFile
+public class RepositoryFileData
 {
     [JsonProperty("basename")]
     public string BaseName { get; set; }

@@ -22,7 +22,7 @@ public class RepositoriesViewModel : INotifyPropertyChanged
     private readonly FileSaver _fileSaver;
     private readonly RepositoryService _repositoryService;
     private readonly SettingsDialog _settingsDialog;
-    private Root[] _repositories;
+    private GitRepository[] _repositories;
 
 
     public RepositoriesViewModel(Window window,
@@ -47,7 +47,7 @@ public class RepositoriesViewModel : INotifyPropertyChanged
     
     public ICommand SaveRepositoriesCommand { get; private set; }
 
-    public Root[] Repositories
+    public GitRepository[] Repositories
     {
         get => _repositories;
         set
@@ -116,5 +116,5 @@ public class RepositoriesViewModel : INotifyPropertyChanged
         }
     }
 
-    private async Task<Root[]> GetAllProjects(GitLabClient client) => await client.GetProjects();
+    private async Task<GitRepository[]> GetAllProjects(GitLabClient client) => await client.GetProjects();
 }

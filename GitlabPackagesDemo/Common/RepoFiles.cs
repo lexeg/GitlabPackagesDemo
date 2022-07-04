@@ -4,7 +4,7 @@ namespace GitlabPackagesDemo.Common;
 
 public class RepoFiles
 {
-    public Root Repository { get; set; }
+    public GitRepository Repository { get; set; }
 
-    public RootFile[] Files { get; set; }
+    public RepositoryFileData[] Files { get; set; }
 }

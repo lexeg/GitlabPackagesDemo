@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 
 namespace GitlabPackagesDemo.GitLab;
 
-public class Root
+public class GitRepository
 {
     [JsonProperty("id")]
     public int Id { get; set; }

@@ -26,10 +26,10 @@ public class GitLabClient : IDisposable
     /*
      * curl --location --request GET 'https://gitlab-orms.ad.speechpro.com/api/v4/projects?private_token=<your_access_token>'
      */
-    public async Task<Root[]> GetProjects()
+    public async Task<GitRepository[]> GetProjects()
     {
         const int maxEntriesPerPage = 100;
-        var projects = new List<Root>();
+        var projects = new List<GitRepository>();
         var count = await GetProjectCount();
         var pageCount = Math.Ceiling(count / (decimal)maxEntriesPerPage);
         for (var page = 1; page <= pageCount; page++)
@@ -38,7 +38,7 @@ public class GitLabClient : IDisposable
                 $"{_hostAddress}?private_token={_settings.PrivateToken}&order_by=id&per_page={maxEntriesPerPage}&page={page}");
             if (!responseMessage.IsSuccessStatusCode) throw new Exception(nameof(GetProjects));
             var content = await responseMessage.Content.ReadAsStringAsync();
-            var items = JsonConvert.DeserializeObject<Root[]>(content) ?? Array.Empty<Root>();
+            var items = JsonConvert.DeserializeObject<GitRepository[]>(content) ?? Array.Empty<GitRepository>();
             projects.AddRange(items);
         }
 
@@ -49,7 +49,7 @@ public class GitLabClient : IDisposable
      * curl --location --request GET 'https://gitlab-orms.ad.speechpro.com/api/v4/projects/157/search?scope=blobs&search=.csproj%20filename:*.csproj' \
 --header 'PRIVATE-TOKEN: <your_access_token>'
      */
-    public async Task<RootFile[]> SearchFilesInProject(int projectId, string searchText, string fileExtension)
+    public async Task<RepositoryFileData[]> SearchFilesInProject(int projectId, string searchText, string fileExtension)
     {
         var encodedSearch = Uri.EscapeDataString($"{searchText} filename:*.{fileExtension}");
         if (!_httpClient.DefaultRequestHeaders.Contains("PRIVATE-TOKEN"))
@@ -61,7 +61,7 @@ public class GitLabClient : IDisposable
             await _httpClient.GetAsync($"{_hostAddress}/{projectId}/search?scope=blobs&search={encodedSearch}");
         if (!responseMessage.IsSuccessStatusCode) throw new Exception(nameof(SearchFilesInProject));
         var content = await responseMessage.Content.ReadAsStringAsync();
-        return JsonConvert.DeserializeObject<RootFile[]>(content);
+        return JsonConvert.DeserializeObject<RepositoryFileData[]>(content);
     }
 
     /*

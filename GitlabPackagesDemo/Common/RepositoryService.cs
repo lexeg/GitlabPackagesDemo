@@ -21,11 +21,11 @@ public class RepositoryService
     public async Task<RepoFiles[]> GetFilesInProject(GitLabClient client,
         string searchText,
         string fileExtension,
-        Root[] items,
+        GitRepository[] repositories,
         string rootDirectory)
     {
         var repoFiles = new List<RepoFiles>();
-        foreach (var item in items)
+        foreach (var item in repositories)
         {
             var filesInProject = await client.SearchFilesInProject(item.Id, searchText, fileExtension);
             repoFiles.Add(new RepoFiles { Repository = item, Files = filesInProject });
