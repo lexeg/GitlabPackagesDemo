@@ -11,7 +11,8 @@ namespace GitlabPackagesDemo.Views
         public MainWindow()
         {
             InitializeComponent();
-            DataContext = new RepositoriesViewModel(this, new FileSaver());
+            // TODO: DI-containers
+            DataContext = new RepositoriesViewModel(this, new FileSaver(), new RepositoryService());
         }
     }
 }
