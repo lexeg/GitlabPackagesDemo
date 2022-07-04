@@ -99,7 +99,7 @@ public class RepositoriesViewModel : INotifyPropertyChanged
         Repositories ??= await GetAllProjects(client);
         var filesInProject = await _repositoryService.GetFilesInProject(client, "PackageReference", "csproj", Repositories, rootDirectory);
         var filesContent = await _repositoryService.GetFilesContent(client, filesInProject, rootDirectory);
-        var result = _repositoryService.GroupToDictionary(filesContent);
+        var result = _repositoryService.GroupToPackageProjects(filesContent);
         await _fileSaver.Serialize(rootDirectory, result);
         await _fileSaver.CreateList(rootDirectory, result, "list.txt", true);
         await _fileSaver.CreateList(rootDirectory, result, "list2.txt", false);

@@ -35,11 +35,11 @@ public class RepositoryService
         return repoFiles.ToArray();
     }
     
-    public async Task<(string Package, string Project, string Version)[]> GetFilesContent(GitLabClient client,
+    public async Task<PackageData[]> GetFilesContent(GitLabClient client,
         RepoFiles[] repoFiles,
         string rootDirectory)
     {
-        var tuples = new List<(string Package, string Project, string Version)>();
+        var packageDataItems = new List<PackageData>();
         foreach (var repoFile in repoFiles)
         {
             var dir = Path.Combine(rootDirectory, $"{repoFile.Repository.Name}-{repoFile.Repository.Id}");
@@ -55,11 +55,15 @@ public class RepositoryService
                 packages.AddRange(items);
             }
 
-            tuples.AddRange(packages.Select(reference =>
-                (reference.Include, path_with_namespace: repoFile.Repository.PathWithNamespace, reference.Version)));
+            packageDataItems.AddRange(packages.Select(reference => new PackageData
+            {
+                Package = reference.Include,
+                Project = repoFile.Repository.PathWithNamespace,
+                Version = reference.Version
+            }));
         }
 
-        return tuples.ToArray();
+        return packageDataItems.ToArray();
     }
     
     private PackageReference[] GetPackages(string fileContent)
@@ -87,22 +91,31 @@ public class RepositoryService
 
         return packageReferences.ToArray();
     }
-    
-    public KeyValuePair<string, (string Project, string Version)[]>[] GroupToDictionary(
-        (string Package, string Project, string Version)[] filesContent)
+
+    public PackageProjects[] GroupToPackageProjects(PackageData[] packageDataItems)
     {
         var func2 =
-            new Func<IGrouping<string, (string Package, string Project, string Version)>,
-                IEnumerable<(string Project, string Version)>>(x => x.Select(xx => (xx.Project, xx.Version)));
+            new Func<IGrouping<string, PackageData>,
+                IEnumerable<ProjectData>>(x => x.Select(xx => new ProjectData
+            {
+                Project = xx.Project,
+                Version = xx.Version
+            }));
 
         var func =
-            new Func<IGrouping<string, (string Package, string Project, string Version)>, (string Project, string
-                Version)[]>(x => func2(x).Distinct(new ProjectWithVersionComparer()).ToArray());
+            new Func<IGrouping<string, PackageData>, ProjectData[]>(x =>
+                func2(x).Distinct(new ProjectWithVersionComparer()).ToArray());
 
-        var result = filesContent
+        var result = packageDataItems
             .GroupBy(fc => fc.Package)
             .ToDictionary(x => x.Key, func)
+            .Select(x => new PackageProjects
+            {
+                Package = x.Key,
+                Projects = x.Value
+            })
             .ToArray();
+
         return result;
     }
 }

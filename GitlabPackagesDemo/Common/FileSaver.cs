@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -42,24 +41,24 @@ public class FileSaver
         await File.WriteAllTextAsync(path, fileContent);
     }
 
-    public async Task Serialize(string directoryPath, KeyValuePair<string, (string Project, string Version)[]>[] result)
+    public async Task Serialize(string directoryPath, PackageProjects[] packageItems)
     {
         var directoryInfo = Directory.CreateDirectory(directoryPath);
-        var serializeObject = JsonConvert.SerializeObject(result, Formatting.Indented);
+        var serializeObject = JsonConvert.SerializeObject(packageItems, Formatting.Indented);
         await File.WriteAllTextAsync(Path.Combine(directoryInfo.FullName, "packages.json"), serializeObject);
     }
     
     public async Task CreateList(string directoryPath,
-        KeyValuePair<string, (string Project, string Version)[]>[] res,
+        PackageProjects[] packageItems,
         string fileName,
         bool foolPath)
     {
         var directoryInfo = Directory.CreateDirectory(directoryPath);
         var content = new StringBuilder();
-        foreach (var (key, value) in res)
+        foreach (var packageProjects in packageItems)
         {
             var sb = new StringBuilder();
-            var stringsMap = value
+            var stringsMap = packageProjects.Projects
                 .Where(v => !string.IsNullOrEmpty(v.Version))
                 .OrderBy(v => v.Version)
                 .GroupBy(v => v.Version, v => v.Project)
@@ -73,7 +72,7 @@ public class FileSaver
 
             if (sb.Length != 0)
             {
-                content.AppendLine($"{key}:");
+                content.AppendLine($"{packageProjects.Package}:");
                 content.AppendLine(sb.ToString());
             }
         }
