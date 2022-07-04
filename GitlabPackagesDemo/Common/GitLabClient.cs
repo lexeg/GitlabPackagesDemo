@@ -20,7 +20,7 @@ public class GitLabClient : IDisposable
     {
         _settings = settings;
         _hostAddress = CreateGitLabUri(_settings);
-        _httpClient = new HttpClient();
+        _httpClient = CreateHttpClient(_settings.PrivateToken);
     }
 
     /*
@@ -52,11 +52,6 @@ public class GitLabClient : IDisposable
     public async Task<RepositoryFileData[]> SearchFilesInProject(int projectId, string searchText, string fileExtension)
     {
         var encodedSearch = Uri.EscapeDataString($"{searchText} filename:*.{fileExtension}");
-        if (!_httpClient.DefaultRequestHeaders.Contains("PRIVATE-TOKEN"))
-        {
-            _httpClient.DefaultRequestHeaders.Add("PRIVATE-TOKEN", _settings.PrivateToken);
-        }
-
         var responseMessage =
             await _httpClient.GetAsync($"{_hostAddress}/{projectId}/search?scope=blobs&search={encodedSearch}");
         if (!responseMessage.IsSuccessStatusCode) throw new Exception(nameof(SearchFilesInProject));
@@ -71,11 +66,6 @@ public class GitLabClient : IDisposable
     public async Task<string> GetFileByName(int projectId, string fileName, string branch)
     {
         var encodedFileName = Uri.EscapeDataString(fileName);
-        if (!_httpClient.DefaultRequestHeaders.Contains("PRIVATE-TOKEN"))
-        {
-            _httpClient.DefaultRequestHeaders.Add("PRIVATE-TOKEN", _settings.PrivateToken);
-        }
-
         var responseMessage =
             await _httpClient.GetAsync(
                 $"{_hostAddress}/{projectId}/repository/files/{encodedFileName}/raw?ref={branch}");
@@ -95,10 +85,16 @@ public class GitLabClient : IDisposable
         uriBuilder.Append("/api/v4/projects");
         return uriBuilder.ToString();
     }
+    
+    private HttpClient CreateHttpClient(string privateToken)
+    {
+        var httpClient = new HttpClient();
+        httpClient.DefaultRequestHeaders.Add("PRIVATE-TOKEN", privateToken);
+        return httpClient;
+    }
 
     private async Task<int> GetProjectCount()
     {
-        _httpClient.DefaultRequestHeaders.Add("PRIVATE-TOKEN", _settings.PrivateToken);
         var responseMessage = await _httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Head, $"{_hostAddress}"));
         if (!responseMessage.IsSuccessStatusCode) throw new Exception(nameof(GetProjectCount));
         var totalAsString = responseMessage.Headers.GetValues("X-Total").Single();
