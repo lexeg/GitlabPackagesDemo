@@ -6,6 +6,7 @@ using GitlabPackagesDemo.Annotations;
 using GitlabPackagesDemo.Commands;
 using GitlabPackagesDemo.Models;
 using GitlabPackagesDemo.Settings;
+using Microsoft.Extensions.Options;
 
 namespace GitlabPackagesDemo.ViewModels;
 
@@ -15,11 +16,11 @@ public class SettingsViewModel : INotifyPropertyChanged
     private readonly GitLabSettings _settings;
     private SettingsModel _currentSettings;
 
-    public SettingsViewModel(Window window, GitLabSettings settings)
+    public SettingsViewModel(Window window, IOptions<GitLabSettings> settings)
     {
         _window = window;
-        _settings = settings;
-        _currentSettings = CreateSettingsModel(settings);
+        _settings = settings.Value;
+        _currentSettings = CreateSettingsModel(settings.Value);
         InitializeCommands();
     }
 

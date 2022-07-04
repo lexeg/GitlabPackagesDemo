@@ -1,11 +1,47 @@
-﻿using System.Windows;
+﻿using System;
+using System.IO;
+using System.Windows;
+using GitlabPackagesDemo.Common;
+using GitlabPackagesDemo.Settings;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace GitlabPackagesDemo.Views
+namespace GitlabPackagesDemo.Views;
+
+/// <summary>
+/// Interaction logic for App.xaml
+/// </summary>
+public partial class App
 {
-    /// <summary>
-    /// Interaction logic for App.xaml
-    /// </summary>
-    public partial class App : Application
+    private readonly IServiceProvider _serviceProvider;
+    private readonly IConfiguration _configuration;
+
+    public App()
     {
+        _configuration = new ConfigurationBuilder()
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+            .Build();
+
+        var serviceCollection = new ServiceCollection();
+        ConfigureServices(serviceCollection);
+        _serviceProvider = serviceCollection.BuildServiceProvider();
+    }
+
+    protected override void OnStartup(StartupEventArgs e)
+    {
+        base.OnStartup(e);
+        var mainWindow = _serviceProvider.GetRequiredService<MainWindow>();
+        mainWindow.Show();
+    }
+
+    private void ConfigureServices(IServiceCollection services)
+    {
+        services.Configure<GitLabSettings>(_configuration.GetSection(nameof(GitLabSettings)));
+        services
+            .AddScoped(typeof(FileSaver))
+            .AddScoped(typeof(RepositoryService))
+            .AddScoped(typeof(SettingsDialog))
+            .AddScoped(typeof(MainWindow));
     }
 }

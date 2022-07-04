@@ -11,19 +11,25 @@ namespace GitlabPackagesDemo.Common;
 
 public class RepositoryService
 {
+    private readonly FileSaver _fileSaver;
+
+    public RepositoryService(FileSaver fileSaver)
+    {
+        _fileSaver = fileSaver;
+    }
+    
     public async Task<RepoFiles[]> GetFilesInProject(GitLabClient client,
         string searchText,
         string fileExtension,
         Root[] items,
-        string rootDirectory,
-        FileSaver fileSaver)
+        string rootDirectory)
     {
         var repoFiles = new List<RepoFiles>();
         foreach (var item in items)
         {
             var filesInProject = await client.SearchFilesInProject(item.Id, searchText, fileExtension);
             repoFiles.Add(new RepoFiles { Repository = item, Files = filesInProject });
-            await fileSaver.SaveProjectFiles(filesInProject, rootDirectory, $"{item.Name}-{item.Id}");
+            await _fileSaver.SaveProjectFiles(filesInProject, rootDirectory, $"{item.Name}-{item.Id}");
         }
 
         return repoFiles.ToArray();
@@ -31,8 +37,7 @@ public class RepositoryService
     
     public async Task<(string Package, string Project, string Version)[]> GetFilesContent(GitLabClient client,
         RepoFiles[] repoFiles,
-        string rootDirectory,
-        FileSaver fileSaver)
+        string rootDirectory)
     {
         var tuples = new List<(string Package, string Project, string Version)>();
         foreach (var repoFile in repoFiles)
@@ -45,7 +50,7 @@ public class RepositoryService
                 var fileByName = await client.GetFileByName(repoFile.Repository.Id, repoFileFile.FileName,
                     repoFileFile.Ref);
                 var last = repoFileFile.FileName.Split('/').Last();
-                await fileSaver.SaveFileContent(fileByName, directoryInfo, last);
+                await _fileSaver.SaveFileContent(fileByName, directoryInfo, last);
                 var items = GetPackages(fileByName);
                 packages.AddRange(items);
             }

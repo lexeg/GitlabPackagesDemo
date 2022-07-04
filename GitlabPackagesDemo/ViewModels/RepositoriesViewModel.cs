@@ -10,6 +10,7 @@ using GitlabPackagesDemo.Common;
 using GitlabPackagesDemo.GitLab;
 using GitlabPackagesDemo.Settings;
 using GitlabPackagesDemo.Views;
+using Microsoft.Extensions.Options;
 using Microsoft.Win32;
 
 namespace GitlabPackagesDemo.ViewModels;
@@ -17,16 +18,24 @@ namespace GitlabPackagesDemo.ViewModels;
 public class RepositoriesViewModel : INotifyPropertyChanged
 {
     private readonly Window _window;
+    private readonly GitLabSettings _settings;
     private readonly FileSaver _fileSaver;
     private readonly RepositoryService _repositoryService;
+    private readonly SettingsDialog _settingsDialog;
     private Root[] _repositories;
 
 
-    public RepositoriesViewModel(Window window, FileSaver fileSaver, RepositoryService repositoryService)
+    public RepositoriesViewModel(Window window,
+        IOptions<GitLabSettings> settings,
+        FileSaver fileSaver,
+        RepositoryService repositoryService,
+        SettingsDialog settingsDialog)
     {
         _window = window;
+        _settings = settings.Value;
         _fileSaver = fileSaver;
         _repositoryService = repositoryService;
+        _settingsDialog = settingsDialog;
         InitializeCommands();
     }
 
@@ -77,27 +86,19 @@ public class RepositoriesViewModel : INotifyPropertyChanged
         }, _ => HasData);
     }
 
-    private GitLabSettings GetSettings() => new()
-    {
-        Host = "https://gitlab-orms.ad.speechpro.com",
-        PrivateToken = "D2tpy9ph-guGKfeVnemn"
-    };
-
     private async void LoadRepositories()
     {
-        var settings = GetSettings();
-        using var client = new GitLabClient(settings);
+        using var client = new GitLabClient(_settings);
         Repositories = await GetAllProjects(client);
     }
     
     private async void ButtonBase_OnClick()
     {
         const string rootDirectory = "prjs";
-        var settings = GetSettings();
-        using var client = new GitLabClient(settings);
+        using var client = new GitLabClient(_settings);
         Repositories ??= await GetAllProjects(client);
-        var filesInProject = await _repositoryService.GetFilesInProject(client, "PackageReference", "csproj", Repositories, rootDirectory, _fileSaver);
-        var filesContent = await _repositoryService.GetFilesContent(client, filesInProject, rootDirectory, _fileSaver);
+        var filesInProject = await _repositoryService.GetFilesInProject(client, "PackageReference", "csproj", Repositories, rootDirectory);
+        var filesContent = await _repositoryService.GetFilesContent(client, filesInProject, rootDirectory);
         var result = _repositoryService.GroupToDictionary(filesContent);
         await _fileSaver.Serialize(rootDirectory, result);
         await _fileSaver.CreateList(rootDirectory, result, "list.txt", true);
@@ -106,11 +107,10 @@ public class RepositoriesViewModel : INotifyPropertyChanged
     
     private void OpenSettings()
     {
-        var gitlabSettings = GetSettings();
-        var settingsDialog = new SettingsDialog(gitlabSettings);
-        if (settingsDialog.ShowDialog().GetValueOrDefault())
+        var gitlabSettings = _settings;
+        if (_settingsDialog.ShowDialog().GetValueOrDefault())
         {
-            if (settingsDialog.DataContext is not SettingsViewModel settingsDialogDataContext) return;
+            if (_settingsDialog.DataContext is not SettingsViewModel settingsDialogDataContext) return;
             gitlabSettings.Host = settingsDialogDataContext.Host;
             gitlabSettings.PrivateToken = settingsDialogDataContext.Token;
         }
