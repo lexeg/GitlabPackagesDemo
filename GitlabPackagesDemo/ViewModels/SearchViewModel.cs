@@ -4,6 +4,7 @@ using System.Windows;
 using System.Windows.Input;
 using GitlabPackagesDemo.Annotations;
 using GitlabPackagesDemo.Commands;
+using GitlabPackagesDemo.Models;
 using GitlabPackagesDemo.Settings;
 using Microsoft.Extensions.Options;
 
@@ -13,7 +14,7 @@ public class SearchViewModel : INotifyPropertyChanged
 {
     private readonly Window _window;
     private readonly SearchSettings _settings;
-    private SearchSettings _currentSettings;
+    private SearchSettingsModel _currentSettings;
 
     public SearchViewModel(Window window, IOptions<SearchSettings> settings)
     {
@@ -65,7 +66,7 @@ public class SearchViewModel : INotifyPropertyChanged
         }, _ => true);
     }
 
-    private SearchSettings CreateSettingsModel(SearchSettings settings) => new()
+    private SearchSettingsModel CreateSettingsModel(SearchSettings settings) => new()
     {
         SearchText = settings.SearchText,
         FileExtension = settings.FileExtension
