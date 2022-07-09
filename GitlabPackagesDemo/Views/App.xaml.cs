@@ -6,6 +6,8 @@ using GitlabPackagesDemo.Helpers;
 using GitlabPackagesDemo.Settings;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace GitlabPackagesDemo.Views;
 
@@ -46,5 +48,8 @@ public partial class App
             .AddScoped(typeof(RepositoryService))
             .AddScoped(typeof(DialogFactory))
             .AddScoped(typeof(MainWindow));
+
+        services.AddScoped<ILoggerFactory, NullLoggerFactory>();
+        services.AddScoped(typeof(ILogger<>), typeof(Logger<>));
     }
 }

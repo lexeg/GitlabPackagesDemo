@@ -6,11 +6,16 @@ using System.Xml;
 using GitlabPackagesDemo.Comparers;
 using GitlabPackagesDemo.GitLab;
 using GitlabPackagesDemo.Settings;
+using Microsoft.Extensions.Logging;
 
 namespace GitlabPackagesDemo.Common;
 
 public class RepositoryService
 {
+    private readonly ILogger<RepositoryService> _logger;
+
+    public RepositoryService(ILogger<RepositoryService> logger) => _logger = logger;
+    
     public async Task<RepoFiles[]> GetFilesInProject(GitLabClient client,
         SearchSettings searchSettings,
         GitRepository[] repositories)
@@ -35,10 +40,11 @@ public class RepositoryService
             var packages = new List<PackageReference>();
             foreach (var repoFileFile in repoFile.Files)
             {
-                var fileByName = await client.GetFileByName(repoFile.Repository.Id,
+                var fileContent = await client.GetFileByName(repoFile.Repository.Id,
                     repoFileFile.FileName,
                     repoFileFile.Ref);
-                var items = GetPackages(fileByName);
+                _logger.LogInformation(repoFileFile.FileName);
+                var items = GetPackages(fileContent);
                 packages.AddRange(items);
             }
 
@@ -55,10 +61,8 @@ public class RepositoryService
     
     private PackageReference[] GetPackages(string fileContent)
     {
-        // Debug.WriteLine(fileName);
         var packageReferences = new List<PackageReference>();
         var doc = new XmlDocument();
-        // doc.Load(fileName);
         doc.LoadXml(fileContent);
 
         XmlNode root = doc.DocumentElement;
