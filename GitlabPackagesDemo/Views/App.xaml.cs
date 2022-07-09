@@ -2,6 +2,7 @@
 using System.IO;
 using System.Windows;
 using GitlabPackagesDemo.Common;
+using GitlabPackagesDemo.Helpers;
 using GitlabPackagesDemo.Settings;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -38,10 +39,12 @@ public partial class App
     private void ConfigureServices(IServiceCollection services)
     {
         services.Configure<GitLabSettings>(_configuration.GetSection(nameof(GitLabSettings)));
+        services.Configure<SearchSettings>(_configuration.GetSection(nameof(SearchSettings)));
+
         services
             .AddScoped(typeof(FileSaver))
             .AddScoped(typeof(RepositoryService))
-            .AddScoped(typeof(SettingsDialog))
+            .AddScoped(typeof(DialogFactory))
             .AddScoped(typeof(MainWindow));
     }
 }

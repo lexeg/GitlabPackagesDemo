@@ -27,6 +27,7 @@
             <MenuItem Header="{StaticResource FileMenu}">
                 <MenuItem Header="{StaticResource ShowRepositoriesMenu}" Command="{Binding ShowRepositoriesCommand}" />
                 <MenuItem Header="{StaticResource ClickButtonMenu}" Command="{Binding ClickButtonCommand}" />
+                <MenuItem Header="{StaticResource FindFilesInProjectMenu}" Command="{Binding FindFilesInProjectCommand}" />
                 <MenuItem Header="{StaticResource OpenSettingsMenu}" Command="{Binding OpenSettingsCommand}" />
                 <Separator />
                 <MenuItem Header="{StaticResource ExportMenu}">

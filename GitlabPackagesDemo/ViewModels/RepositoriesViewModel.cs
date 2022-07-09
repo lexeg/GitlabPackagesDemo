@@ -9,9 +9,10 @@ using GitlabPackagesDemo.Annotations;
 using GitlabPackagesDemo.Commands;
 using GitlabPackagesDemo.Common;
 using GitlabPackagesDemo.GitLab;
+using GitlabPackagesDemo.Helpers;
 using GitlabPackagesDemo.Settings;
-using GitlabPackagesDemo.Views;
 using Microsoft.Extensions.Options;
+using MessageBox = System.Windows.MessageBox;
 using SaveFileDialog = Microsoft.Win32.SaveFileDialog;
 
 namespace GitlabPackagesDemo.ViewModels;
@@ -19,31 +20,37 @@ namespace GitlabPackagesDemo.ViewModels;
 public class RepositoriesViewModel : INotifyPropertyChanged
 {
     private readonly Window _window;
-    private readonly GitLabSettings _settings;
+    private readonly IOptions<GitLabSettings> _gitLabSettings;
+    private readonly IOptions<SearchSettings> _searchSettings;
     private readonly FileSaver _fileSaver;
     private readonly RepositoryService _repositoryService;
-    private readonly SettingsDialog _settingsDialog;
+    private readonly DialogFactory _dialogFactory;
     private GitRepository[] _repositories;
     private PackageProjects[] _packageProjects;
+    private RepoFiles[] _filesInProject;
 
 
     public RepositoriesViewModel(Window window,
-        IOptions<GitLabSettings> settings,
+        IOptions<GitLabSettings> gitLabSettings,
+        IOptions<SearchSettings> searchSettings,
         FileSaver fileSaver,
         RepositoryService repositoryService,
-        SettingsDialog settingsDialog)
+        DialogFactory dialogFactory)
     {
         _window = window;
-        _settings = settings.Value;
+        _gitLabSettings = gitLabSettings;
+        _searchSettings = searchSettings;
         _fileSaver = fileSaver;
         _repositoryService = repositoryService;
-        _settingsDialog = settingsDialog;
+        _dialogFactory = dialogFactory;
         InitializeCommands();
     }
 
     public ICommand ShowRepositoriesCommand { get; private set; }
     
     public ICommand ClickButtonCommand { get; private set; }
+    
+    public ICommand FindFilesInProjectCommand { get; private set; }
     
     public ICommand OpenSettingsCommand { get; private set; }
     
@@ -72,6 +79,16 @@ public class RepositoriesViewModel : INotifyPropertyChanged
         }
     }
 
+    public RepoFiles[] FilesInProject
+    {
+        get => _filesInProject;
+        set
+        {
+            _filesInProject = value;
+            OnPropertyChanged(nameof(FilesInProject));
+        }
+    }
+
     public ICommand CloseAppCommand { get; private set; }
 
     public bool HasData => _repositories != null && _repositories.Any();
@@ -90,6 +107,7 @@ public class RepositoriesViewModel : INotifyPropertyChanged
     {
         ShowRepositoriesCommand = new BaseAutoEventCommand(_ => LoadRepositories(), _ => true);
         ClickButtonCommand = new BaseAutoEventCommand(_ => ButtonBase_OnClick(), _ => HasData);
+        FindFilesInProjectCommand = new BaseAutoEventCommand(_ => FindFilesInProject(), _ => HasData);
         OpenSettingsCommand = new BaseAutoEventCommand(_ => OpenSettings(), _ => true);
         CloseAppCommand = new BaseAutoEventCommand(_ => _window.Close(), _ => true);
         SaveRepositoriesCommand = new BaseAutoEventCommand(async _ =>
@@ -113,26 +131,43 @@ public class RepositoriesViewModel : INotifyPropertyChanged
 
     private async void LoadRepositories()
     {
-        using var client = new GitLabClient(_settings);
+        using var client = new GitLabClient(_gitLabSettings.Value);
         Repositories = await GetAllProjects(client);
     }
     
     private async void ButtonBase_OnClick()
     {
         const string rootDirectory = "prjs";
-        using var client = new GitLabClient(_settings);
+        using var client = new GitLabClient(_gitLabSettings.Value);
         Repositories ??= await GetAllProjects(client);
-        var filesInProject = await _repositoryService.GetFilesInProject(client, "PackageReference", "csproj", Repositories, rootDirectory);
-        var filesContent = await _repositoryService.GetFilesContent(client, filesInProject, rootDirectory);
+        FilesInProject ??= await _repositoryService.GetFilesInProject(client, "PackageReference", "csproj", Repositories, rootDirectory);
+        var filesContent = await _repositoryService.GetFilesContent(client, FilesInProject, rootDirectory);
         PackageProjects = _repositoryService.GroupToPackageProjects(filesContent);
+    }
+    
+    private async void FindFilesInProject()
+    {
+        const string rootDirectory = "prjs";
+        var searchSettings = _searchSettings.Value;
+        var searchDialog = _dialogFactory.CreateSearchDialog(_searchSettings);
+        if (searchDialog.ShowDialog().GetValueOrDefault())
+        {
+            if (searchDialog.DataContext is not SearchViewModel searchDialogDataContext) return;
+            searchSettings.SearchText = searchDialogDataContext.SearchText;
+            searchSettings.FileExtension = searchDialogDataContext.FileExtension;
+            using var client = new GitLabClient(_gitLabSettings.Value);
+            FilesInProject ??= await _repositoryService.GetFilesInProject(client, searchSettings.SearchText, searchSettings.FileExtension, Repositories, rootDirectory);
+            MessageBox.Show("Done");
+        }
     }
     
     private void OpenSettings()
     {
-        var gitlabSettings = _settings;
-        if (_settingsDialog.ShowDialog().GetValueOrDefault())
+        var gitlabSettings = _gitLabSettings.Value;
+        var settingsDialog = _dialogFactory.CreateSettingsDialog(_gitLabSettings);
+        if (settingsDialog.ShowDialog().GetValueOrDefault())
         {
-            if (_settingsDialog.DataContext is not SettingsViewModel settingsDialogDataContext) return;
+            if (settingsDialog.DataContext is not SettingsViewModel settingsDialogDataContext) return;
             gitlabSettings.Host = settingsDialogDataContext.Host;
             gitlabSettings.PrivateToken = settingsDialogDataContext.Token;
         }

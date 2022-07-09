@@ -1,4 +1,4 @@
-﻿<Window x:Class="GitlabPackagesDemo.Views.SettingsDialog"
+﻿<Window x:Class="GitlabPackagesDemo.Views.SearchDialog"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -15,9 +15,9 @@
         </ResourceDictionary>
     </Window.Resources>
     <Window.Title>
-        <StaticResource ResourceKey="SettingsWindowTitle" />
+        <StaticResource ResourceKey="SearchWindowTitle" />
     </Window.Title>
-    <Grid Margin="5" d:DataContext="{d:DesignInstance views:SettingsViewModel}">
+    <Grid Margin="5" d:DataContext="{d:DesignInstance views:SearchViewModel}">
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
@@ -31,10 +31,10 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
-            <TextBlock Grid.Row="0" Grid.Column="0" Margin="2" Text="{StaticResource UrlCaption}" />
-            <TextBlock Grid.Row="1" Grid.Column="0" Margin="2" Text="{StaticResource TokenCaption}" />
-            <TextBox Grid.Row="0" Grid.Column="1" Margin="2" Text="{Binding Host}" />
-            <TextBox Grid.Row="1" Grid.Column="1" Margin="2" Text="{Binding Token}" />
+            <TextBlock Grid.Row="0" Grid.Column="0" Margin="2" Text="{StaticResource SearchTextCaption}" />
+            <TextBlock Grid.Row="1" Grid.Column="0" Margin="2" Text="{StaticResource FileExtensionCaption}" />
+            <TextBox Grid.Row="0" Grid.Column="1" Margin="2" Text="{Binding SearchText}" />
+            <TextBox Grid.Row="1" Grid.Column="1" Margin="2" Text="{Binding FileExtension}" />
         </Grid>
         <Grid Grid.Row="1" Margin="5">
             <Grid.ColumnDefinitions>
@@ -42,7 +42,7 @@
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
-            <Button Grid.Column="1" Padding="4" Margin="2"  Content="{StaticResource ApplyButton}" Command="{Binding ApplyCommand}" />
+            <Button Grid.Column="1" Padding="4" Margin="2" Content="{StaticResource FindButton}" Command="{Binding FindCommand}" />
             <Button Grid.Column="2" Padding="4" Margin="2" Content="{StaticResource CancelButton}" Command="{Binding CancelCommand}" />
         </Grid>
     </Grid>

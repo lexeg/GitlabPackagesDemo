@@ -4,6 +4,7 @@
     <system:String x:Key="MainWindowTitle">Viewer nuget-пакетов</system:String>
     <system:String x:Key="SettingsWindowTitle">Настройки</system:String>
     <system:String x:Key="ClickButtonMenu">Нажми на кнопку</system:String>
+    <system:String x:Key="FindFilesInProjectMenu">Найти файлы в репозиториях</system:String>
     <system:String x:Key="OpenSettingsMenu">Открыть настройки</system:String>
     <system:String x:Key="UrlCaption">Url</system:String>
     <system:String x:Key="TokenCaption">Private Token</system:String>
@@ -18,4 +19,8 @@
     <system:String x:Key="ExportMenu">Экспорт</system:String>
     <system:String x:Key="ExportRepositories">Выгрузить список репозиториев</system:String>
     <system:String x:Key="ExportPackages">Выгрузить список библиотек</system:String>
+    <system:String x:Key="SearchWindowTitle">Поиск</system:String>
+    <system:String x:Key="FindButton">Поиск</system:String>
+    <system:String x:Key="SearchTextCaption">Текст</system:String>
+    <system:String x:Key="FileExtensionCaption">Расширение</system:String>
 </ResourceDictionary>
