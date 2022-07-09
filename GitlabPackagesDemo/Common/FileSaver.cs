@@ -23,9 +23,9 @@ public class FileSaver
 
     public async Task SaveProjectFiles(RepositoryFileData[] repositoryFiles, string filePath)
     {
-        var directoryName = Path.GetDirectoryName(filePath);
-        if (string.IsNullOrEmpty(directoryName)) return;
-        if (Directory.Exists(directoryName)) Directory.Delete(directoryName, true);
+        var directoryPath = Path.GetDirectoryName(filePath);
+        if (string.IsNullOrEmpty(directoryPath)) return;
+        if (Directory.Exists(directoryPath)) Directory.Delete(directoryPath, true);
         var builder = new StringBuilder();
         foreach (var f in repositoryFiles)
         {
@@ -37,13 +37,14 @@ public class FileSaver
 
     public Task SaveFileContent(string filePath, string fileContent) => File.WriteAllTextAsync(filePath, fileContent);
 
-    public async Task Serialize(PackageProjects[] packageItems, string directoryPath, string fileName)
+    public async Task Serialize(PackageProjects[] packageItems, string filePath)
     {
-        var directoryInfo = Directory.CreateDirectory(directoryPath);
+        var directoryPath = Path.GetDirectoryName(filePath);
+        if (string.IsNullOrEmpty(directoryPath)) return;
         var serializeObject = JsonConvert.SerializeObject(packageItems, Formatting.Indented);
-        await File.WriteAllTextAsync(Path.Combine(directoryInfo.FullName, fileName), serializeObject);
+        await File.WriteAllTextAsync(filePath, serializeObject);
     }
-    
+
     public async Task CreateList(PackageProjects[] packageItems,
         string directoryPath,
         string fileName,

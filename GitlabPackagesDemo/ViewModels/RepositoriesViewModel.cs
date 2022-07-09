@@ -56,6 +56,8 @@ public class RepositoriesViewModel : INotifyPropertyChanged
     public ICommand OpenSettingsCommand { get; private set; }
     
     public ICommand SaveRepositoriesCommand { get; private set; }
+    
+    public ICommand SerializePackagesCommand { get; private set; }
 
     public ICommand SavePackagesCommand { get; private set; }
     
@@ -123,12 +125,18 @@ public class RepositoriesViewModel : INotifyPropertyChanged
             var filePath = saveFileDialog.FileName;
             await _fileSaver.SaveProjects(_repositories, filePath);
         }, _ => HasData);
+        SerializePackagesCommand = new BaseAutoEventCommand(async _ =>
+        {
+            var saveFileDialog = new SaveFileDialog
+                { DefaultExt = "*.json", Filter = "JSON file |*.json", FileName = "packages.json" };
+            if (saveFileDialog.ShowDialog() != true) return;
+            await _fileSaver.Serialize(PackageProjects, saveFileDialog.FileName);
+        }, _ => HasPackagesData);
         SavePackagesCommand = new BaseAutoEventCommand(async _ =>
         {
             var folderBrowDialog = new FolderBrowserDialog { ShowNewFolderButton = true };
             if (folderBrowDialog.ShowDialog() != DialogResult.OK) return;
             var folderPath = folderBrowDialog.SelectedPath;
-            await _fileSaver.Serialize(PackageProjects, folderPath, "packages.json");
             await _fileSaver.CreateList(PackageProjects, folderPath, "list.txt", true);
             await _fileSaver.CreateList(PackageProjects, folderPath, "list2.txt", false);
         }, _ => HasPackagesData);
