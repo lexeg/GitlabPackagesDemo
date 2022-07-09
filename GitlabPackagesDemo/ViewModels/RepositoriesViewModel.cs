@@ -48,7 +48,7 @@ public class RepositoriesViewModel : INotifyPropertyChanged
 
     public ICommand ShowRepositoriesCommand { get; private set; }
     
-    public ICommand ClickButtonCommand { get; private set; }
+    public ICommand LoadPackageProjectsCommand { get; private set; }
     
     public ICommand FindFilesInProjectCommand { get; private set; }
     
@@ -106,7 +106,7 @@ public class RepositoriesViewModel : INotifyPropertyChanged
     private void InitializeCommands()
     {
         ShowRepositoriesCommand = new BaseAutoEventCommand(_ => LoadRepositories(), _ => true);
-        ClickButtonCommand = new BaseAutoEventCommand(_ => ButtonBase_OnClick(), _ => HasData);
+        LoadPackageProjectsCommand = new BaseAutoEventCommand(_ => LoadPackageProjects(), _ => HasData);
         FindFilesInProjectCommand = new BaseAutoEventCommand(_ => FindFilesInProject(), _ => HasData);
         OpenSettingsCommand = new BaseAutoEventCommand(_ => OpenSettings(), _ => true);
         CloseAppCommand = new BaseAutoEventCommand(_ => _window.Close(), _ => true);
@@ -135,12 +135,13 @@ public class RepositoriesViewModel : INotifyPropertyChanged
         Repositories = await GetAllProjects(client);
     }
     
-    private async void ButtonBase_OnClick()
+    private async void LoadPackageProjects()
     {
         const string rootDirectory = "prjs";
+        var settings = _searchSettings.Value;
         using var client = new GitLabClient(_gitLabSettings.Value);
         Repositories ??= await GetAllProjects(client);
-        FilesInProject ??= await _repositoryService.GetFilesInProject(client, "PackageReference", "csproj", Repositories, rootDirectory);
+        FilesInProject ??= await _repositoryService.GetFilesInProject(client, settings.SearchText, settings.FileExtension, Repositories, rootDirectory);
         var filesContent = await _repositoryService.GetFilesContent(client, FilesInProject, rootDirectory);
         PackageProjects = _repositoryService.GroupToPackageProjects(filesContent);
     }

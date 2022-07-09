@@ -24,7 +24,7 @@ public class FileSaver
     public async Task SaveProjectFiles(RepositoryFileData[] repositoryFiles, string rootDirectory, string subDir)
     {
         var dir = Path.Combine(rootDirectory, subDir);
-        if (Directory.Exists(dir)) Directory.Delete(dir);
+        if (Directory.Exists(dir)) Directory.Delete(dir, true);
         var directoryInfo = Directory.CreateDirectory(dir);
         var builder = new StringBuilder();
         foreach (var f in repositoryFiles)
