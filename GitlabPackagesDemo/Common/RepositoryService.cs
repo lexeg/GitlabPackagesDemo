@@ -1,56 +1,43 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Xml;
 using GitlabPackagesDemo.Comparers;
 using GitlabPackagesDemo.GitLab;
+using GitlabPackagesDemo.Settings;
 
 namespace GitlabPackagesDemo.Common;
 
 public class RepositoryService
 {
-    private readonly FileSaver _fileSaver;
-
-    public RepositoryService(FileSaver fileSaver)
-    {
-        _fileSaver = fileSaver;
-    }
-    
     public async Task<RepoFiles[]> GetFilesInProject(GitLabClient client,
-        string searchText,
-        string fileExtension,
-        GitRepository[] repositories,
-        string rootDirectory)
+        SearchSettings searchSettings,
+        GitRepository[] repositories)
     {
+        var searchText = searchSettings.SearchText;
+        var fileExtension = searchSettings.FileExtension;
         var repoFiles = new List<RepoFiles>();
         foreach (var item in repositories)
         {
             var filesInProject = await client.SearchFilesInProject(item.Id, searchText, fileExtension);
             repoFiles.Add(new RepoFiles { Repository = item, Files = filesInProject });
-            await _fileSaver.SaveProjectFiles(filesInProject, rootDirectory, $"{item.Name}-{item.Id}");
         }
 
         return repoFiles.ToArray();
     }
     
-    public async Task<PackageData[]> GetFilesContent(GitLabClient client,
-        RepoFiles[] repoFiles,
-        string rootDirectory)
+    public async Task<PackageData[]> GetFilesContent(GitLabClient client, RepoFiles[] repoFiles)
     {
         var packageDataItems = new List<PackageData>();
         foreach (var repoFile in repoFiles)
         {
-            var dir = Path.Combine(rootDirectory, $"{repoFile.Repository.Name}-{repoFile.Repository.Id}");
-            var directoryInfo = Directory.CreateDirectory(dir);
             var packages = new List<PackageReference>();
             foreach (var repoFileFile in repoFile.Files)
             {
-                var fileByName = await client.GetFileByName(repoFile.Repository.Id, repoFileFile.FileName,
+                var fileByName = await client.GetFileByName(repoFile.Repository.Id,
+                    repoFileFile.FileName,
                     repoFileFile.Ref);
-                var last = repoFileFile.FileName.Split('/').Last();
-                await _fileSaver.SaveFileContent(fileByName, directoryInfo, last);
                 var items = GetPackages(fileByName);
                 packages.AddRange(items);
             }

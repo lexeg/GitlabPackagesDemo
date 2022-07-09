@@ -33,6 +33,8 @@
                 <MenuItem Header="{StaticResource ExportMenu}">
                     <MenuItem Header="{StaticResource ExportRepositories}" Command="{Binding SaveRepositoriesCommand}" />
                     <MenuItem Header="{StaticResource ExportPackages}" Command="{Binding SavePackagesCommand}" />
+                    <MenuItem Header="{StaticResource ExportFoundFiles}" Command="{Binding SaveFoundFilesCommand}" />
+                    <MenuItem Header="{StaticResource ExportFoundFilesContents}" Command="{Binding SaveFoundFilesContentsCommand}" />
                 </MenuItem>
                 <Separator />
                 <MenuItem Header="{StaticResource CloseWindow}" Command="{Binding CloseAppCommand}" />

@@ -9,7 +9,7 @@ namespace GitlabPackagesDemo.Common;
 
 public class FileSaver
 {
-    public async Task SaveProjects(string filePath, GitRepository[] repositories)
+    public async Task SaveProjects(GitRepository[] repositories, string filePath)
     {
         var builder = new StringBuilder();
         foreach (var repository in repositories)
@@ -21,35 +21,31 @@ public class FileSaver
         await File.WriteAllTextAsync(filePath, builder.ToString());
     }
 
-    public async Task SaveProjectFiles(RepositoryFileData[] repositoryFiles, string rootDirectory, string subDir)
+    public async Task SaveProjectFiles(RepositoryFileData[] repositoryFiles, string filePath)
     {
-        var dir = Path.Combine(rootDirectory, subDir);
-        if (Directory.Exists(dir)) Directory.Delete(dir, true);
-        var directoryInfo = Directory.CreateDirectory(dir);
+        var directoryName = Path.GetDirectoryName(filePath);
+        if (string.IsNullOrEmpty(directoryName)) return;
+        if (Directory.Exists(directoryName)) Directory.Delete(directoryName, true);
         var builder = new StringBuilder();
         foreach (var f in repositoryFiles)
         {
             builder.AppendLine($"{f.ProjectId}; {f.FileName}; {f.Path}; {f.Ref}");
         }
 
-        await File.WriteAllTextAsync(Path.Combine(directoryInfo.FullName, "res.txt"), builder.ToString());
+        await File.WriteAllTextAsync(filePath, builder.ToString());
     }
 
-    public async Task SaveFileContent(string fileContent, DirectoryInfo directoryInfo, string last)
-    {
-        var path = Path.Combine(directoryInfo.FullName, last);
-        await File.WriteAllTextAsync(path, fileContent);
-    }
+    public Task SaveFileContent(string filePath, string fileContent) => File.WriteAllTextAsync(filePath, fileContent);
 
-    public async Task Serialize(string directoryPath, PackageProjects[] packageItems)
+    public async Task Serialize(PackageProjects[] packageItems, string directoryPath, string fileName)
     {
         var directoryInfo = Directory.CreateDirectory(directoryPath);
         var serializeObject = JsonConvert.SerializeObject(packageItems, Formatting.Indented);
-        await File.WriteAllTextAsync(Path.Combine(directoryInfo.FullName, "packages.json"), serializeObject);
+        await File.WriteAllTextAsync(Path.Combine(directoryInfo.FullName, fileName), serializeObject);
     }
     
-    public async Task CreateList(string directoryPath,
-        PackageProjects[] packageItems,
+    public async Task CreateList(PackageProjects[] packageItems,
+        string directoryPath,
         string fileName,
         bool foolPath)
     {

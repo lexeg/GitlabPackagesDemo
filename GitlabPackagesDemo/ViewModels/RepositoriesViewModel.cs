@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
@@ -57,6 +58,10 @@ public class RepositoriesViewModel : INotifyPropertyChanged
     public ICommand SaveRepositoriesCommand { get; private set; }
 
     public ICommand SavePackagesCommand { get; private set; }
+    
+    public ICommand SaveFoundFilesCommand { get; private set; }
+    
+    public ICommand SaveFoundFilesContentsCommand { get; private set; }
 
     public GitRepository[] Repositories
     {
@@ -116,17 +121,32 @@ public class RepositoriesViewModel : INotifyPropertyChanged
                 { DefaultExt = "*.txt", Filter = "Текстовые документы |*.txt", FileName = "projects.txt" };
             if (saveFileDialog.ShowDialog() != true) return;
             var filePath = saveFileDialog.FileName;
-            await _fileSaver.SaveProjects(filePath, _repositories);
+            await _fileSaver.SaveProjects(_repositories, filePath);
         }, _ => HasData);
         SavePackagesCommand = new BaseAutoEventCommand(async _ =>
         {
             var folderBrowDialog = new FolderBrowserDialog { ShowNewFolderButton = true };
             if (folderBrowDialog.ShowDialog() != DialogResult.OK) return;
             var folderPath = folderBrowDialog.SelectedPath;
-            await _fileSaver.Serialize(folderPath, PackageProjects);
-            await _fileSaver.CreateList(folderPath, PackageProjects, "list.txt", true);
-            await _fileSaver.CreateList(folderPath, PackageProjects, "list2.txt", false);
+            await _fileSaver.Serialize(PackageProjects, folderPath, "packages.json");
+            await _fileSaver.CreateList(PackageProjects, folderPath, "list.txt", true);
+            await _fileSaver.CreateList(PackageProjects, folderPath, "list2.txt", false);
         }, _ => HasPackagesData);
+        SaveFoundFilesCommand = new BaseAutoEventCommand(async _ =>
+        {
+            var folderBrowDialog = new FolderBrowserDialog { ShowNewFolderButton = true };
+            if (folderBrowDialog.ShowDialog() != DialogResult.OK) return;
+            var folderPath = folderBrowDialog.SelectedPath;
+            await SaveFoundFiles(FilesInProject, folderPath, "res.txt");
+        }, _ => FilesInProject != null && FilesInProject.Any());
+        SaveFoundFilesContentsCommand = new BaseAutoEventCommand(async _ =>
+        {
+            var folderBrowDialog = new FolderBrowserDialog { ShowNewFolderButton = true };
+            if (folderBrowDialog.ShowDialog() != DialogResult.OK) return;
+            var folderPath = folderBrowDialog.SelectedPath;
+            using var client = new GitLabClient(_gitLabSettings.Value);
+            await SaveFoundFilesContents(client, FilesInProject, folderPath);
+        }, _ => FilesInProject != null && FilesInProject.Any());
     }
 
     private async void LoadRepositories()
@@ -137,18 +157,16 @@ public class RepositoriesViewModel : INotifyPropertyChanged
     
     private async void LoadPackageProjects()
     {
-        const string rootDirectory = "prjs";
         var settings = _searchSettings.Value;
         using var client = new GitLabClient(_gitLabSettings.Value);
         Repositories ??= await GetAllProjects(client);
-        FilesInProject ??= await _repositoryService.GetFilesInProject(client, settings.SearchText, settings.FileExtension, Repositories, rootDirectory);
-        var filesContent = await _repositoryService.GetFilesContent(client, FilesInProject, rootDirectory);
+        FilesInProject ??= await _repositoryService.GetFilesInProject(client, settings, Repositories);
+        var filesContent = await _repositoryService.GetFilesContent(client, FilesInProject);
         PackageProjects = _repositoryService.GroupToPackageProjects(filesContent);
     }
-    
+
     private async void FindFilesInProject()
     {
-        const string rootDirectory = "prjs";
         var searchSettings = _searchSettings.Value;
         var searchDialog = _dialogFactory.CreateSearchDialog(_searchSettings);
         if (searchDialog.ShowDialog().GetValueOrDefault())
@@ -157,7 +175,7 @@ public class RepositoriesViewModel : INotifyPropertyChanged
             searchSettings.SearchText = searchDialogDataContext.SearchText;
             searchSettings.FileExtension = searchDialogDataContext.FileExtension;
             using var client = new GitLabClient(_gitLabSettings.Value);
-            FilesInProject ??= await _repositoryService.GetFilesInProject(client, searchSettings.SearchText, searchSettings.FileExtension, Repositories, rootDirectory);
+            FilesInProject ??= await _repositoryService.GetFilesInProject(client, searchSettings, Repositories);
             MessageBox.Show("Done");
         }
     }
@@ -175,4 +193,30 @@ public class RepositoriesViewModel : INotifyPropertyChanged
     }
 
     private async Task<GitRepository[]> GetAllProjects(GitLabClient client) => await client.GetProjects();
+    
+    private async Task SaveFoundFiles(RepoFiles[] repoFiles, string folderPath, string fileName)
+    {
+        foreach (var repoFile in repoFiles)
+        {
+            await _fileSaver.SaveProjectFiles(repoFile.Files,
+                Path.Combine(folderPath, $"{repoFile.Repository.Name}-{repoFile.Repository.Id}", fileName));
+        }
+    }
+
+    private async Task SaveFoundFilesContents(GitLabClient client, RepoFiles[] repoFiles, string folderPath)
+    {
+        foreach (var repoFile in repoFiles)
+        {
+            var dir = Path.Combine(folderPath, $"{repoFile.Repository.Name}-{repoFile.Repository.Id}");
+            var directoryInfo = Directory.CreateDirectory(dir);
+            foreach (var repoFileFile in repoFile.Files)
+            {
+                var fileContent = await client.GetFileByName(repoFile.Repository.Id,
+                    repoFileFile.FileName,
+                    repoFileFile.Ref);
+                var fileName = repoFileFile.FileName.Split('/').Last();
+                await _fileSaver.SaveFileContent(Path.Combine(directoryInfo.FullName, fileName), fileContent);
+            }
+        }
+    }
 }
