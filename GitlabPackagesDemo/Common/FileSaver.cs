@@ -45,35 +45,34 @@ public class FileSaver
         await File.WriteAllTextAsync(filePath, serializeObject);
     }
 
-    public async Task CreateList(PackageProjects[] packageItems,
-        string directoryPath,
-        string fileName,
-        bool foolPath)
+    public async Task CreatePackagesFile(PackageProjects[] packageItems, string filePath, bool writeFullPath)
     {
-        var directoryInfo = Directory.CreateDirectory(directoryPath);
+        var directoryName = Path.GetDirectoryName(filePath);
+        if (string.IsNullOrEmpty(directoryName)) return;
+        Directory.CreateDirectory(directoryName);
         var content = new StringBuilder();
-        foreach (var packageProjects in packageItems)
+        foreach (var packageItem in packageItems)
         {
             var sb = new StringBuilder();
-            var stringsMap = packageProjects.Projects
+            var stringsMap = packageItem.Projects
                 .Where(v => !string.IsNullOrEmpty(v.Version))
                 .OrderBy(v => v.Version)
                 .GroupBy(v => v.Version, v => v.Project)
                 .ToDictionary(v => v.Key, v => v.ToArray());
             foreach (var (key1, value1) in stringsMap)
             {
-                var projects = foolPath ? value1 : value1.Select(x => x.Split('/').Last());
+                var projects = writeFullPath ? value1 : value1.Select(x => x.Split('/').Last());
                 var join = string.Join(", ", projects);
                 sb.AppendLine($"\t{key1} ({join})");
             }
 
             if (sb.Length != 0)
             {
-                content.AppendLine($"{packageProjects.Package}:");
+                content.AppendLine($"{packageItem.Package}:");
                 content.AppendLine(sb.ToString());
             }
         }
 
-        await File.WriteAllTextAsync(Path.Combine(directoryInfo.FullName, fileName), content.ToString());
+        await File.WriteAllTextAsync(filePath, content.ToString());
     }
 }

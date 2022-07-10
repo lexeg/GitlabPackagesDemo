@@ -202,7 +202,7 @@ public class RepositoriesViewModel : INotifyPropertyChanged
             var folderPath = savingPackagesDialogDataContext.FolderPath;
             var fileName = savingPackagesDialogDataContext.FileName;
             var fullPath = savingPackagesDialogDataContext.WriteFullPath;
-            await _fileSaver.CreateList(PackageProjects, folderPath, fileName, fullPath);
+            await _fileSaver.CreatePackagesFile(PackageProjects, Path.Combine(folderPath, fileName), fullPath);
             MessageBox.Show("Done");
         }
     }
