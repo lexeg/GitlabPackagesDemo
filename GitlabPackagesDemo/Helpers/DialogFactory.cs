@@ -9,4 +9,6 @@ public class DialogFactory
     public SettingsDialog CreateSettingsDialog(IOptions<GitLabSettings> settings) => new(settings);
 
     public SearchDialog CreateSearchDialog(IOptions<SearchSettings> settings) => new(settings);
+
+    public SavingPackagesDialog CreateSavingPackagesDialog() => new();
 }

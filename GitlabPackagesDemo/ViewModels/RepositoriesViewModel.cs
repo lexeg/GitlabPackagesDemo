@@ -132,14 +132,7 @@ public class RepositoriesViewModel : INotifyPropertyChanged
             if (saveFileDialog.ShowDialog() != true) return;
             await _fileSaver.Serialize(PackageProjects, saveFileDialog.FileName);
         }, _ => HasPackagesData);
-        SavePackagesCommand = new BaseAutoEventCommand(async _ =>
-        {
-            var folderBrowDialog = new FolderBrowserDialog { ShowNewFolderButton = true };
-            if (folderBrowDialog.ShowDialog() != DialogResult.OK) return;
-            var folderPath = folderBrowDialog.SelectedPath;
-            await _fileSaver.CreateList(PackageProjects, folderPath, "list.txt", true);
-            await _fileSaver.CreateList(PackageProjects, folderPath, "list2.txt", false);
-        }, _ => HasPackagesData);
+        SavePackagesCommand = new BaseAutoEventCommand(async _ => { await SavePackages(); }, _ => HasPackagesData);
         SaveFoundFilesCommand = new BaseAutoEventCommand(async _ =>
         {
             var folderBrowDialog = new FolderBrowserDialog { ShowNewFolderButton = true };
@@ -197,6 +190,20 @@ public class RepositoriesViewModel : INotifyPropertyChanged
             if (settingsDialog.DataContext is not SettingsViewModel settingsDialogDataContext) return;
             gitlabSettings.Host = settingsDialogDataContext.Host;
             gitlabSettings.PrivateToken = settingsDialogDataContext.Token;
+        }
+    }
+
+    private async Task SavePackages()
+    {
+        var savingPackagesDialog = _dialogFactory.CreateSavingPackagesDialog();
+        if (savingPackagesDialog.ShowDialog().GetValueOrDefault())
+        {
+            if (savingPackagesDialog.DataContext is not SavingPackagesViewModel savingPackagesDialogDataContext) return;
+            var folderPath = savingPackagesDialogDataContext.FolderPath;
+            var fileName = savingPackagesDialogDataContext.FileName;
+            var fullPath = savingPackagesDialogDataContext.WriteFullPath;
+            await _fileSaver.CreateList(PackageProjects, folderPath, fileName, fullPath);
+            MessageBox.Show("Done");
         }
     }
 

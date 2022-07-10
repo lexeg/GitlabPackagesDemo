@@ -3,11 +3,16 @@
                     xmlns:system="clr-namespace:System;assembly=mscorlib">
     <system:String x:Key="MainWindowTitle">Viewer nuget-пакетов</system:String>
     <system:String x:Key="SettingsWindowTitle">Настройки</system:String>
+    <system:String x:Key="SavingPackagesTitle">Сохранение библиотек</system:String>
     <system:String x:Key="LoadPackageProjectsMenu">Загрузить NuGet-пакеты</system:String>
     <system:String x:Key="FindFilesInProjectMenu">Найти файлы в репозиториях</system:String>
     <system:String x:Key="OpenSettingsMenu">Открыть настройки</system:String>
     <system:String x:Key="UrlCaption">Url</system:String>
     <system:String x:Key="TokenCaption">Private Token</system:String>
+    <system:String x:Key="FolderPathCaption">Путь к директории</system:String>
+    <system:String x:Key="FileNameCaption">Имя файла</system:String>
+    <system:String x:Key="WriteFullPathCaption">Полный путь репозитория</system:String>
+    <system:String x:Key="OkButton">OK</system:String>
     <system:String x:Key="ApplyButton">Применить</system:String>
     <system:String x:Key="CancelButton">Отмена</system:String>
     <system:String x:Key="FileMenu">Файл</system:String>
