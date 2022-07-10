@@ -55,10 +55,9 @@ public class FileSaver
         {
             var sb = new StringBuilder();
             var stringsMap = packageItem.Projects
-                .Where(v => !string.IsNullOrEmpty(v.Version))
                 .OrderBy(v => v.Version)
                 .GroupBy(v => v.Version, v => v.Project)
-                .ToDictionary(v => v.Key, v => v.ToArray());
+                .ToDictionary(v => v.Key ?? "No version", v => v.ToArray());
             foreach (var (key1, value1) in stringsMap)
             {
                 var projects = writeFullPath ? value1 : value1.Select(x => x.Split('/').Last());
