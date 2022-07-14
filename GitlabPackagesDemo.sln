@@ -2,6 +2,8 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GitlabPackagesDemo", "GitlabPackagesDemo\GitlabPackagesDemo.csproj", "{FFCEB87D-121C-48EE-9300-83A0BA23FA87}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GitlabPackagesDemoConsole", "GitlabPackagesDemoConsole\GitlabPackagesDemoConsole.csproj", "{E5D0892F-DC7C-4AF4-BF46-92D607808363}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +14,9 @@ Global
 		{FFCEB87D-121C-48EE-9300-83A0BA23FA87}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FFCEB87D-121C-48EE-9300-83A0BA23FA87}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FFCEB87D-121C-48EE-9300-83A0BA23FA87}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E5D0892F-DC7C-4AF4-BF46-92D607808363}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E5D0892F-DC7C-4AF4-BF46-92D607808363}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E5D0892F-DC7C-4AF4-BF46-92D607808363}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E5D0892F-DC7C-4AF4-BF46-92D607808363}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
