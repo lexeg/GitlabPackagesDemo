@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Xml;
-using GitlabPackagesDemo.Comparers;
+using GitlabPackagesDemo.Common.Data;
 using GitlabPackagesDemo.GitLab;
 using GitlabPackagesDemo.Settings;
 using Microsoft.Extensions.Logging;
@@ -81,32 +81,5 @@ public class RepositoryService
         }
 
         return packageReferences.ToArray();
-    }
-
-    public PackageProjects[] GroupToPackageProjects(PackageData[] packageDataItems)
-    {
-        var func2 =
-            new Func<IGrouping<string, PackageData>,
-                IEnumerable<ProjectData>>(x => x.Select(xx => new ProjectData
-            {
-                Project = xx.Project,
-                Version = xx.Version
-            }));
-
-        var func =
-            new Func<IGrouping<string, PackageData>, ProjectData[]>(x =>
-                func2(x).Distinct(new ProjectWithVersionComparer()).ToArray());
-
-        var result = packageDataItems
-            .GroupBy(fc => fc.Package)
-            .ToDictionary(x => x.Key, func)
-            .Select(x => new PackageProjects
-            {
-                Package = x.Key,
-                Projects = x.Value
-            })
-            .ToArray();
-
-        return result;
     }
 }

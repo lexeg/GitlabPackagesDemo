@@ -1,7 +1,8 @@
 ﻿using System.IO;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using GitlabPackagesDemo.Common.Data;
+using GitlabPackagesDemo.Extensions;
 using GitlabPackagesDemo.GitLab;
 using Newtonsoft.Json;
 
@@ -51,18 +52,13 @@ public class FileSaver
         if (string.IsNullOrEmpty(directoryName)) return;
         Directory.CreateDirectory(directoryName);
         var content = new StringBuilder();
-        foreach (var packageItem in packageItems)
+        foreach (var packageItem in packageItems.GetPackageWithVersionProjects())
         {
             var sb = new StringBuilder();
-            var stringsMap = packageItem.Projects
-                .OrderBy(v => v.Version)
-                .GroupBy(v => v.Version, v => v.Project)
-                .ToDictionary(v => v.Key ?? "No version", v => v.ToArray());
-            foreach (var (key1, value1) in stringsMap)
+            foreach (var versionProjects in packageItem.VersionProjects)
             {
-                var projects = writeFullPath ? value1 : value1.Select(x => x.Split('/').Last());
-                var join = string.Join(", ", projects);
-                sb.AppendLine($"\t{key1} ({join})");
+                var projectsAsString = string.Join(", ", versionProjects.GetProjectsNames(writeFullPath));
+                sb.AppendLine($"\t{versionProjects.Version} ({projectsAsString})");
             }
 
             if (sb.Length != 0)

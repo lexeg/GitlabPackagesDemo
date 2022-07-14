@@ -9,6 +9,8 @@ using System.Windows.Input;
 using GitlabPackagesDemo.Annotations;
 using GitlabPackagesDemo.Commands;
 using GitlabPackagesDemo.Common;
+using GitlabPackagesDemo.Common.Data;
+using GitlabPackagesDemo.Extensions;
 using GitlabPackagesDemo.GitLab;
 using GitlabPackagesDemo.Helpers;
 using GitlabPackagesDemo.Settings;
@@ -163,7 +165,7 @@ public class RepositoriesViewModel : INotifyPropertyChanged
         Repositories ??= await GetAllProjects(client);
         FilesInProject ??= await _repositoryService.GetFilesInProject(client, settings, Repositories);
         var filesContent = await _repositoryService.GetFilesContent(client, FilesInProject);
-        PackageProjects = _repositoryService.GroupToPackageProjects(filesContent);
+        PackageProjects = filesContent.GetPackageProjects();
     }
 
     private async void FindFilesInProject()
