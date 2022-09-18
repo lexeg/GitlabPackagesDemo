@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
-using GitlabPackagesDemo.GitLab;
-using GitlabPackagesDemo.Settings;
+﻿using System.Text;
+using GitlabPackagesDemo.Common.GitLab;
+using GitlabPackagesDemo.Common.Settings;
 using Newtonsoft.Json;
 
 namespace GitlabPackagesDemo.Common;

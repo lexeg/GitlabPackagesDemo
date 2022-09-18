@@ -1,4 +1,4 @@
-﻿namespace GitlabPackagesDemo.Settings;
+﻿namespace GitlabPackagesDemo.Common.Settings;
 
 public class SearchSettings
 {

@@ -1,7 +1,6 @@
-﻿using System;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
-namespace GitlabPackagesDemo.GitLab;
+namespace GitlabPackagesDemo.Common.GitLab;
 
 public class ContainerExpirationPolicy
 {

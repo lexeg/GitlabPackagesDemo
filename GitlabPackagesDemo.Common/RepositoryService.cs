@@ -1,15 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Xml;
+﻿using System.Xml;
 using GitlabPackagesDemo.Common.Data;
-using GitlabPackagesDemo.GitLab;
-using GitlabPackagesDemo.Settings;
+using GitlabPackagesDemo.Common.GitLab;
+using GitlabPackagesDemo.Common.Settings;
 using Microsoft.Extensions.Logging;
 
 namespace GitlabPackagesDemo.Common;
 
+//TODO: Remove ILogger
 public class RepositoryService
 {
     private readonly ILogger<RepositoryService> _logger;

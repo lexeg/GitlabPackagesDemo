@@ -1,8 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using GitlabPackagesDemo.Common.Data;
+﻿using GitlabPackagesDemo.Common.Data;
 
-namespace GitlabPackagesDemo.Extensions;
+namespace GitlabPackagesDemo.Common.Extensions;
 
 public static class PackageProjectsExtensions
 {

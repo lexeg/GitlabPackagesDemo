@@ -1,6 +1,6 @@
 ﻿using GitlabPackagesDemo.Common;
+using GitlabPackagesDemo.Common.Settings;
 using GitlabPackagesDemo.Helpers;
-using GitlabPackagesDemo.Settings;
 using GitlabPackagesDemo.ViewModels;
 using Microsoft.Extensions.Options;
 

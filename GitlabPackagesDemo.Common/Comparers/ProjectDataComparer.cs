@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using GitlabPackagesDemo.Common.Data;
+﻿using GitlabPackagesDemo.Common.Data;
 
-namespace GitlabPackagesDemo.Comparers;
+namespace GitlabPackagesDemo.Common.Comparers;
 
 public class ProjectDataComparer : IEqualityComparer<ProjectData>
 {

@@ -1,4 +1,4 @@
-﻿using GitlabPackagesDemo.GitLab;
+﻿using GitlabPackagesDemo.Common.GitLab;
 
 namespace GitlabPackagesDemo.Common;
 

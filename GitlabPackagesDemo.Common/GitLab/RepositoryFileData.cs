@@ -1,7 +1,8 @@
 ﻿using Newtonsoft.Json;
 
-namespace GitlabPackagesDemo.GitLab;
+namespace GitlabPackagesDemo.Common.GitLab;
 
+//TODO: Посмотри, где используется. Возможно, стоит поправить контракты и модели
 public class RepositoryFileData
 {
     [JsonProperty("basename")]

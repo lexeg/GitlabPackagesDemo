@@ -1,9 +1,7 @@
-﻿using System.IO;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Text;
 using GitlabPackagesDemo.Common.Data;
-using GitlabPackagesDemo.Extensions;
-using GitlabPackagesDemo.GitLab;
+using GitlabPackagesDemo.Common.Extensions;
+using GitlabPackagesDemo.Common.GitLab;
 using Newtonsoft.Json;
 
 namespace GitlabPackagesDemo.Common;
@@ -27,6 +25,7 @@ public class FileSaver
         var directoryPath = Path.GetDirectoryName(filePath);
         if (string.IsNullOrEmpty(directoryPath)) return;
         if (Directory.Exists(directoryPath)) Directory.Delete(directoryPath, true);
+        Directory.CreateDirectory(directoryPath);
         var builder = new StringBuilder();
         foreach (var f in repositoryFiles)
         {

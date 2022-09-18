@@ -1,4 +1,4 @@
-﻿using GitlabPackagesDemo.Settings;
+﻿using GitlabPackagesDemo.Common.Settings;
 using GitlabPackagesDemo.Views;
 using Microsoft.Extensions.Options;
 

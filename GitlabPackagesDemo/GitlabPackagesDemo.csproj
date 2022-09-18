@@ -29,4 +29,8 @@
       </None>
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\GitlabPackagesDemo.Common\GitlabPackagesDemo.Common.csproj" />
+    </ItemGroup>
+
 </Project>

@@ -2,8 +2,8 @@
 using System.IO;
 using System.Windows;
 using GitlabPackagesDemo.Common;
+using GitlabPackagesDemo.Common.Settings;
 using GitlabPackagesDemo.Helpers;
-using GitlabPackagesDemo.Settings;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;

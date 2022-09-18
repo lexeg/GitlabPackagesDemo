@@ -1,9 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using GitlabPackagesDemo.Common.Comparers;
 using GitlabPackagesDemo.Common.Data;
-using GitlabPackagesDemo.Comparers;
 
-namespace GitlabPackagesDemo.Extensions;
+namespace GitlabPackagesDemo.Common.Extensions;
 
 public static class PackageDataExtensions
 {

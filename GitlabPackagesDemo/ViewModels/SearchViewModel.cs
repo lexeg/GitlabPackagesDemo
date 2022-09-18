@@ -2,10 +2,9 @@
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Input;
-using GitlabPackagesDemo.Annotations;
 using GitlabPackagesDemo.Commands;
+using GitlabPackagesDemo.Common.Settings;
 using GitlabPackagesDemo.Models;
-using GitlabPackagesDemo.Settings;
 using Microsoft.Extensions.Options;
 
 namespace GitlabPackagesDemo.ViewModels;
