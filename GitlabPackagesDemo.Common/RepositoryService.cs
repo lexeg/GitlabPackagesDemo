@@ -2,17 +2,11 @@
 using GitlabPackagesDemo.Common.Data;
 using GitlabPackagesDemo.Common.GitLab;
 using GitlabPackagesDemo.Common.Settings;
-using Microsoft.Extensions.Logging;
 
 namespace GitlabPackagesDemo.Common;
 
-//TODO: Remove ILogger
 public class RepositoryService
 {
-    private readonly ILogger<RepositoryService> _logger;
-
-    public RepositoryService(ILogger<RepositoryService> logger) => _logger = logger;
-    
     public async Task<RepoFiles[]> GetFilesInProject(GitLabClient client,
         SearchSettings searchSettings,
         GitRepository[] repositories)
@@ -40,7 +34,6 @@ public class RepositoryService
                 var fileContent = await client.GetFileByName(repoFile.Repository.Id,
                     repoFileFile.FileName,
                     repoFileFile.Ref);
-                _logger.LogInformation(repoFileFile.FileName);
                 var items = GetPackages(fileContent);
                 packages.AddRange(items);
             }

@@ -3,7 +3,6 @@ using GitlabPackagesDemo.Common.Data;
 using GitlabPackagesDemo.Common.Extensions;
 using GitlabPackagesDemo.Common.GitLab;
 using GitlabPackagesDemo.Common.Settings;
-using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 
 namespace GitlabPackagesDemo.Console.Services;
@@ -25,7 +24,7 @@ class MainService : IMainService
         var settings = _searchSettings.Value;
         using var client = new GitLabClient(_gitLabSettings.Value);
         GitRepository[] repositories = await client.GetProjects();
-        RepositoryService repositoryService = new RepositoryService(NullLogger<RepositoryService>.Instance);
+        RepositoryService repositoryService = new RepositoryService();
         RepoFiles[] filesInProject = await repositoryService.GetFilesInProject(client, settings, repositories);
         var filesContent = await repositoryService.GetFilesContent(client, filesInProject);
         PackageProjects[] packageProjects = filesContent.GetPackageProjects();

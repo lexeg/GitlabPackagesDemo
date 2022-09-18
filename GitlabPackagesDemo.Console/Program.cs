@@ -7,8 +7,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 
-//TODO: Check unused nuget-packages in GitlabPackagesDemo.Common
-//TODO: Проверь, что все классы лежат в нужных сборках. Если класс используется в разных проектах, то в Common. Если нет, то в Console или WPF
 IHost host;
 try
 {
